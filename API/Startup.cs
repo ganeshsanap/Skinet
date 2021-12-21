@@ -25,9 +25,9 @@ namespace API
         {
             services.AddAutoMapper(typeof(MappingProfiles));
             services.AddControllers();
-            services.AddApplicationServices();
             services.AddDbContext<StoreContext>(options => 
                 options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddApplicationServices();
             services.AddSwaggerDocumentation();
             services.AddCors(opt =>
             {
