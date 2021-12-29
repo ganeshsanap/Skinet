@@ -1,5 +1,6 @@
 ﻿using API.Errors;
 using Infrastructure.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -28,7 +29,6 @@ namespace API.Controllers
             return Ok();
         }
 
-
         [HttpGet("ServerError")]
         public ActionResult GetServerError()
         {
@@ -49,6 +49,13 @@ namespace API.Controllers
         public ActionResult GetNotFoundRequest(int id)
         {
             return Ok();
+        }
+
+        [Authorize]
+        [HttpGet("testauth")]
+        public ActionResult<string> GetSecretText()
+        {
+            return "Secret text on server for autherized users";
         }
     }
 }
