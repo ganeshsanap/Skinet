@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Core.Entities.OrderAggregate;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -47,6 +48,18 @@ namespace Infrastructure.Data
                     foreach (var item in products)
                     {
                         await context.Products.AddAsync(item);
+                    }
+
+                    await context.SaveChangesAsync();
+                }
+
+                if (!context.DeliveryMethods.Any())
+                {
+                    var deliveryMethodsData = File.ReadAllText("../Infrastructure/Data/SeedData/delivery.json");
+                    var deliveryMethods = JsonSerializer.Deserialize<List<DeliveryMethod>>(deliveryMethodsData);
+                    foreach (var item in deliveryMethods)
+                    {
+                        await context.DeliveryMethods.AddAsync(item);
                     }
 
                     await context.SaveChangesAsync();
