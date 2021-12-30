@@ -1,6 +1,7 @@
 ﻿using Core.Entities;
 using Core.Entities.OrderAggregate;
 using Core.Interfaces;
+using Core.Specifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,7 @@ namespace Infrastructure.Services
             _basketRepo = basketRepo;
             _unitOfWork = unitOfWork;
         }
+
         public async Task<Order> CreateOrderAsync(string buyerEmail, int delieveryMethodId, string basketId, Address shippingAddress)
         {
             // get basket from repo
@@ -56,19 +58,23 @@ namespace Infrastructure.Services
             return order;
         }
 
-        public Task<IReadOnlyList<DeliveryMethod>> GetDeliveryMethodsAsync()
+        public async Task<IReadOnlyList<DeliveryMethod>> GetDeliveryMethodsAsync()
         {
-            throw new NotImplementedException();
+            return await _unitOfWork.Repository<DeliveryMethod>().ListAllAsync();
         }
 
-        public Task<Order> GetOrderByIdAsync(int id, string buyerEmail)
+        public async Task<Order> GetOrderByIdAsync(int id, string buyerEmail)
         {
-            throw new NotImplementedException();
+            var spec = new OrdersWithItemsAndOrderingSpecification(id, buyerEmail);
+
+            return await _unitOfWork.Repository<Order>().GetEntityWithSpec(spec);
         }
 
-        public Task<IReadOnlyList<Order>> GetOrdersForUserAsync(string buyerEmail)
+        public async Task<IReadOnlyList<Order>> GetOrdersForUserAsync(string buyerEmail)
         {
-            throw new NotImplementedException();
+            var spec = new OrdersWithItemsAndOrderingSpecification(buyerEmail);
+
+            return await _unitOfWork.Repository<Order>().ListAsync(spec);
         }
     }
 }
