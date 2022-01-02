@@ -26,5 +26,3 @@ export interface IOrder {
     status: string;
     total: number;
 }
-
-

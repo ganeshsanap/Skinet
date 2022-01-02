@@ -30,6 +30,9 @@ namespace Infrastructure.Services
 
             var basket = await _basketRepository.GetBasketAsync(basketId);
 
+            if (basket == null)
+                return null;
+
             var shippingPrice = 0m;
 
             if (basket.DeliveryMethodId.HasValue)
@@ -46,30 +49,56 @@ namespace Infrastructure.Services
                     item.Price = productItem.Price;
                 }
             }
-
-            var service = new PaymentIntentService();
+            
+            var paymentService = new PaymentIntentService();
 
             PaymentIntent intent;
 
             if (string.IsNullOrEmpty(basket.PaymentIntentId))
             {
-                var options = new PaymentIntentCreateOptions
+                var paymentOptions = new PaymentIntentCreateOptions
                 {
                     Amount = (long)basket.Items.Sum(i => i.Quantity * (i.Price * 100)) + ((long)shippingPrice * 100),
-                    Currency = "usd",
-                    PaymentMethodTypes = new List<string> { "card" }
+                    Currency = "inr",
+                    PaymentMethodTypes = new List<string> { "card" },
+                    Shipping = new ChargeShippingOptions
+                    {
+                        Name = "Test user",
+                        Address = new AddressOptions
+                        {
+                            Line1 = "Test line 1",
+                            PostalCode = "422210",
+                            City = "Nashik",
+                            State = "MH",
+                            Country = "IND",
+                        },
+                    },
+                    Description = "Test description"
                 };
-                intent = await service.CreateAsync(options);
+                intent = await paymentService.CreateAsync(paymentOptions);
                 basket.PaymentIntentId = intent.Id;
                 basket.ClientSecret = intent.ClientSecret;
             }
             else
             {
-                var options = new PaymentIntentUpdateOptions
+                var paymentOptions = new PaymentIntentUpdateOptions
                 {
-                    Amount = (long)basket.Items.Sum(i => (i.Quantity * (i.Price * 100))) + (long)(shippingPrice * 100)
+                    Amount = (long)basket.Items.Sum(i => (i.Quantity * (i.Price * 100))) + (long)(shippingPrice * 100),
+                    Shipping = new ChargeShippingOptions
+                    {
+                        Name = "Jenny Rosen",
+                        Address = new AddressOptions
+                        {
+                            Line1 = "510 Townsend St",
+                            PostalCode = "98140",
+                            City = "San Francisco",
+                            State = "MH",
+                            Country = "IND",
+                        },
+                    },
+                    Description = "Software development services"
                 };
-                await service.UpdateAsync(basket.PaymentIntentId, options);
+                await paymentService.UpdateAsync(basket.PaymentIntentId, paymentOptions);
             }
 
             await _basketRepository.UpdateBasketAsync(basket);

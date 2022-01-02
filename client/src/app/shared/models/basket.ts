@@ -13,6 +13,10 @@ export interface IBasketItem {
 export interface IBasket {
     id: string;
     items: IBasketItem[];
+    deliveryMethodId?: number;
+    clientSecret?: string;
+    paymentIntentId?: string;
+    shippingPrice?: number;
 }
 
 export class Basket implements IBasket {
@@ -23,5 +27,5 @@ export class Basket implements IBasket {
 export interface IBasketTotals {
     shipping: number;
     subtotal: number;
-    total: number
+    total: number;
 }
