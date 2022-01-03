@@ -31,11 +31,13 @@ namespace API
             services.AddControllers();
             services.AddDbContext<StoreContext>(options =>
             {
-                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+                //options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")); //For Sqlite
+                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")); //For Postgres
             });
             services.AddDbContext<AppIdentityDbContext>(options =>
             {
-                options.UseSqlite(Configuration.GetConnectionString("IdentityConnection"));
+                //options.UseSqlite(Configuration.GetConnectionString("IdentityConnection")); //For Sqlite
+                options.UseNpgsql(Configuration.GetConnectionString("IdentityConnection")); //For Postgres
             });
             services.AddSingleton<IConnectionMultiplexer>(c =>
             {
