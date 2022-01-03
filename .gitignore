@@ -12,6 +12,7 @@
 *.db
 *db.*
 *appsettings.json
+wwwroot
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
